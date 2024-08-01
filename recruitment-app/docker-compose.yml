@@ -1,0 +1,14 @@
+services:
+  db:
+    container_name: wanted-recruitment-db
+    image: postgres:16.3-alpine
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - wanted_recruitment_db:/var/lib/postgresql/data
+    expose:
+      - 5432
+
+volumes:
+  wanted_recruitment_db:

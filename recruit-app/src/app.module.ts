@@ -4,6 +4,11 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { JobModule } from './job/job.module';
+import { Job } from './entities/job.entity';
+import { User } from './entities/user.entity';
+import { Application } from './entities/application.entity';
+import { Company } from './entities/company.entity';
 
 @Module({
   imports: [
@@ -23,6 +28,8 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
         namingStrategy: new SnakeNamingStrategy(), // 코드는 camelCase, DB는 snake_case
       }),
     }),
+    TypeOrmModule.forFeature([Application, Company, Job, User]),
+    JobModule,
   ],
   controllers: [AppController],
   providers: [AppService],

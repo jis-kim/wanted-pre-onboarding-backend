@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 @Module({
   imports: [
@@ -16,6 +17,10 @@ import { ConfigModule } from '@nestjs/config';
         //password: process.env.POSTGRES_PASSWORD,
         //database: process.env.POSTGRES_DB,
         url: process.env.POSTGRES_URL,
+        autoLoadEntities: true, // module에 있는 모든 entity를 감지
+        logging: true,
+        synchronize: true,
+        namingStrategy: new SnakeNamingStrategy(), // 코드는 camelCase, DB는 snake_case
       }),
     }),
   ],

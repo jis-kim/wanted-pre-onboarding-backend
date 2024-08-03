@@ -1,13 +1,13 @@
 services:
   db:
-    container_name: wanted-recruitment-db
+    container_name: wanted-recruit-db
     image: postgres:16.3-alpine
     restart: always
     env_file:
       - .env
     volumes:
-      - wanted_recruitment_db:/var/lib/postgresql/data
+      - wanted_recruit_db:/var/lib/postgresql/data
     ports:
       - '5432:5432'
 volumes:
-  wanted_recruitment_db:
+  wanted_recruit_db:

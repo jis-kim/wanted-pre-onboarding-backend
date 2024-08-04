@@ -54,7 +54,10 @@ export class JobsService {
     return { ...job, ...updateJobDto };
   }
 
-  remove(jobId: string) {
-    return `This action removes a #${jobId} job`;
+  async remove(jobId: string) {
+    const { affected } = await this.jobRepository.delete(jobId);
+    if (affected === 0) {
+      throw new NotFoundException('존재하지 않는 채용공고 입니다.');
+    }
   }
 }

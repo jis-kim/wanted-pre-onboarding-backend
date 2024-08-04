@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { nanoid } from 'nanoid';
 import { Repository } from 'typeorm';
@@ -19,7 +23,6 @@ export class JobsService {
       jobId,
       ...createJobDto,
     });
-    console.log(result);
     return jobId;
   }
 
@@ -31,15 +34,27 @@ export class JobsService {
     return `This action returns all job`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} job`;
+  findOne(jobId: string) {
+    return this.jobRepository.findOneBy({ jobId });
   }
 
-  update(id: number, updateJobDto: UpdateJobDto) {
-    return `This action updates a #${id} job`;
+  async update(jobId: string, updateJobDto: UpdateJobDto) {
+    const job = await this.findOne(jobId);
+    if (!job) {
+      throw new NotFoundException('존재하지 않는 채용공고 입니다.');
+    }
+    const companyId = updateJobDto.companyId;
+    if (job.companyId !== companyId) {
+      throw new ForbiddenException('채용공고를 수정할 권한이 없습니다.');
+    }
+    updateJobDto.companyId = undefined;
+
+    await this.jobRepository.update(jobId, updateJobDto);
+    // 변경된 job 정보를 반환
+    return { ...job, ...updateJobDto };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} job`;
+  remove(jobId: string) {
+    return `This action removes a #${jobId} job`;
   }
 }

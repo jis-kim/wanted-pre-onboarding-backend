@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -23,9 +24,8 @@ export class JobsController {
     @Res() res: Response,
   ): Promise<void> {
     const location = `/jobs/${await this.jobService.create(createJobDto)}`;
-    console.log(location);
     res.setHeader('Location', location);
-    res.status(201).send();
+    res.status(HttpStatus.CREATED).send();
   }
 
   @Get()
@@ -33,18 +33,18 @@ export class JobsController {
     return this.jobService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.jobService.findOne(+id);
+  @Get(':jobId')
+  findOne(@Param('jobId') jobId: string) {
+    return this.jobService.findOne(jobId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateJobDto: UpdateJobDto) {
-    return this.jobService.update(+id, updateJobDto);
+  @Patch(':jobId')
+  update(@Param('jobId') jobId: string, @Body() updateJobDto: UpdateJobDto) {
+    return this.jobService.update(jobId, updateJobDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.jobService.remove(+id);
+  @Delete(':jobId')
+  remove(@Param('jobId') jobId: string) {
+    return this.jobService.remove(jobId);
   }
 }

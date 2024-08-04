@@ -18,19 +18,23 @@ import { Response } from 'express';
 export class JobsController {
   constructor(private readonly jobService: JobsService) {}
 
+  @Get()
+  findAll() {
+    return this.jobService.findAll();
+  }
+
   @Post()
   async create(
     @Body() createJobDto: CreateJobDto,
     @Res() res: Response,
   ): Promise<void> {
-    const location = `/jobs/${await this.jobService.create(createJobDto)}`;
+    const jobId = await this.jobService.create(createJobDto);
+    const location = `/jobs/${jobId}`;
     res.setHeader('Location', location);
-    res.status(HttpStatus.CREATED).send();
-  }
-
-  @Get()
-  findAll() {
-    return this.jobService.findAll();
+    res.status(HttpStatus.CREATED).send({
+      message: 'Job created.',
+      jobId,
+    });
   }
 
   @Get(':jobId')
@@ -39,12 +43,21 @@ export class JobsController {
   }
 
   @Patch(':jobId')
-  update(@Param('jobId') jobId: string, @Body() updateJobDto: UpdateJobDto) {
-    return this.jobService.update(jobId, updateJobDto);
+  async update(
+    @Param('jobId') jobId: string,
+    @Body() updateJobDto: UpdateJobDto,
+  ) {
+    await this.jobService.update(jobId, updateJobDto);
+    return {
+      message: 'Job updated.',
+    };
   }
 
   @Delete(':jobId')
-  remove(@Param('jobId') jobId: string) {
-    return this.jobService.remove(jobId);
+  async remove(@Param('jobId') jobId: string) {
+    await this.jobService.remove(jobId);
+    return {
+      message: 'Job deleted.',
+    };
   }
 }

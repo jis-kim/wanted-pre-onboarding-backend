@@ -45,7 +45,7 @@ export class JobsService {
     }
     const companyId = updateJobDto.companyId;
     if (job.companyId !== companyId) {
-      throw new ForbiddenException('채용공고를 수정할 권한이 없습니다.');
+      throw new ForbiddenException('채용공고 수정 권한이 없습니다.');
     }
     updateJobDto.companyId = undefined;
 

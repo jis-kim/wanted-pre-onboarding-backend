@@ -4,11 +4,11 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { JobModule } from './job/job.module';
-import { Job } from './entities/job.entity';
-import { User } from './entities/user.entity';
-import { Application } from './entities/application.entity';
-import { Company } from './entities/company.entity';
+import { JobsModule } from './jobs/jobs.module';
+import { Application, Company, Job, User } from './entities';
+import { CompaniesModule } from './companies/companies.module';
+import { UsersModule } from './users/users.module';
+import { ApplicationsModule } from './applications/applications.module';
 
 @Module({
   imports: [
@@ -29,7 +29,10 @@ import { Company } from './entities/company.entity';
       }),
     }),
     TypeOrmModule.forFeature([Application, Company, Job, User]),
-    JobModule,
+    JobsModule,
+    CompaniesModule,
+    UsersModule,
+    ApplicationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

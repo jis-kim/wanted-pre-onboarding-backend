@@ -29,7 +29,7 @@ export class Job {
   skills: string;
 
   @Column('int')
-  reward: number; // 채용보상금 (최대 천만원?)
+  reward: number;
 
   @Column('text')
   description: string;
@@ -38,7 +38,7 @@ export class Job {
   @Column('date')
   dueDate: Date;
 
-  @Column()
+  @Column({ type: 'varchar', length: 24 })
   companyId: string;
 
   @ManyToOne(() => Company)

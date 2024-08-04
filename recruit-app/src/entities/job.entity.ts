@@ -34,6 +34,12 @@ export class Job {
   @Column('text')
   description: string;
 
+  @Column({ type: 'varchar', length: 255 })
+  country: string;
+
+  @Column({ type: 'varchar', length: 255 })
+  region: string;
+
   // 채용마감일
   @Column('date')
   dueDate: Date;

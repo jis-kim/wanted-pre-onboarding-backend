@@ -9,18 +9,20 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { CreateJobDto } from './dto/create-job.dto';
+import { JobListDto } from './dto/job-list.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { JobsService } from './jobs.service';
-import { Response } from 'express';
 
 @Controller('jobs')
 export class JobsController {
   constructor(private readonly jobService: JobsService) {}
 
   @Get()
-  findAll() {
-    return this.jobService.findAll();
+  async findAll(): Promise<JobListDto> {
+    const jobList = await this.jobService.findAll();
+    return this.jobService.formatJobList(jobList);
   }
 
   @Post()

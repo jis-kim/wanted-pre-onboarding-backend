@@ -8,6 +8,7 @@ import { nanoid } from 'nanoid';
 import { Repository } from 'typeorm';
 import { Job } from '../entities';
 import { CreateJobDto } from './dto/create-job.dto';
+import { JobInfo, JobListDto } from './dto/job-list.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 
 @Injectable()
@@ -19,7 +20,7 @@ export class JobsService {
 
   async create(createJobDto: CreateJobDto): Promise<string> {
     const jobId = nanoid();
-    const result = await this.jobRepository.insert({
+    await this.jobRepository.insert({
       jobId,
       ...createJobDto,
     });
@@ -30,8 +31,23 @@ export class JobsService {
     return 'This action returns all job';
   }
 
-  findAll() {
-    return `This action returns all job`;
+  async findAll() {
+    const jobList: Job[] = await this.jobRepository.find({
+      select: {
+        jobId: true,
+        position: true,
+        skills: true,
+        country: true,
+        region: true,
+        dueDate: true,
+        company: {
+          companyId: true,
+          companyName: true,
+        },
+      },
+      relations: ['company'],
+    });
+    return jobList;
   }
 
   findOne(jobId: string) {
@@ -59,5 +75,23 @@ export class JobsService {
     if (affected === 0) {
       throw new NotFoundException('존재하지 않는 채용공고 입니다.');
     }
+  }
+
+  formatJobList(jobList: Job[]): JobListDto {
+    return {
+      total: jobList.length,
+      jobs: jobList.map((job): JobInfo => {
+        return {
+          jobId: job.jobId,
+          position: job.position,
+          skills: job.skills,
+          country: job.country,
+          region: job.region,
+          dueDate: job.dueDate,
+          companyId: job.companyId,
+          companyName: job.company.companyName,
+        };
+      }),
+    };
   }
 }

@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { JobsModule } from './jobs/jobs.module';
-import { Application, Company, Job, User } from './entities';
-import { CompaniesModule } from './companies/companies.module';
-import { UsersModule } from './users/users.module';
 import { ApplicationsModule } from './applications/applications.module';
+import { CompaniesModule } from './companies/companies.module';
+import { Application, Company, Job, User } from './entities';
+import { JobsModule } from './jobs/jobs.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -33,7 +31,5 @@ import { ApplicationsModule } from './applications/applications.module';
     UsersModule,
     ApplicationsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

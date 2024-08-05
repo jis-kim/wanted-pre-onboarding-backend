@@ -10,8 +10,8 @@ import { Application } from './application.entity';
 
 @Entity('users')
 export class User {
-  @PrimaryColumn({ type: 'varchar', length: 24 })
-  userId: string; // u-uuid
+  @PrimaryColumn({ type: 'varchar', length: 21 })
+  userId: string;
 
   @Column({ type: 'varchar', length: 255 })
   userName: string;

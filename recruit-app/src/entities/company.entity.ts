@@ -11,7 +11,7 @@ import { Job } from './job.entity';
 // 회사 정보를 저장하는 엔티티
 @Entity()
 export class Company {
-  @PrimaryColumn({ type: 'varchar', length: 24 })
+  @PrimaryColumn({ type: 'varchar', length: 21 })
   companyId: string;
 
   @CreateDateColumn()

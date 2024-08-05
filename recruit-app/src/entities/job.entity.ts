@@ -13,7 +13,7 @@ import { Application } from './application.entity';
 
 @Entity()
 export class Job {
-  @PrimaryColumn({ type: 'varchar', length: 24 })
+  @PrimaryColumn({ type: 'varchar', length: 21 })
   jobId: string;
 
   @CreateDateColumn()
@@ -44,7 +44,7 @@ export class Job {
   @Column('date')
   dueDate: Date;
 
-  @Column({ type: 'varchar', length: 24 })
+  @Column({ type: 'varchar', length: 21 })
   companyId: string;
 
   @ManyToOne(() => Company)

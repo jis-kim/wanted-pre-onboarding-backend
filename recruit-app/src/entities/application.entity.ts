@@ -22,7 +22,7 @@ export enum ApplicationStatus {
 @Unique(['userId', 'jobId'])
 export class Application {
   // 지원서 아이디
-  @PrimaryColumn({ type: 'varchar', length: 24 })
+  @PrimaryColumn({ type: 'varchar', length: 21 })
   applicationId: string;
 
   @CreateDateColumn()
@@ -32,11 +32,11 @@ export class Application {
   updatedAt: Date;
 
   // 지원자 아이디
-  @Column({ type: 'varchar', length: 24 })
+  @Column({ type: 'varchar', length: 21 })
   userId: string;
 
   // 채용공고 아이디
-  @Column({ type: 'varchar', length: 24 })
+  @Column({ type: 'varchar', length: 21 })
   jobId: string;
 
   // 지원서 제목

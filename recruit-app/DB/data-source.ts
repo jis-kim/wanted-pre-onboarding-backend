@@ -31,7 +31,8 @@ config();
     process.exit(1);
   }
   try {
-    await seeder(dataSource);
+    console.log(await seeder.createCompanies(dataSource));
+    console.log(await seeder.createUsers(dataSource));
   } catch (e) {
     console.error(e);
     if (e.code === '23505') {

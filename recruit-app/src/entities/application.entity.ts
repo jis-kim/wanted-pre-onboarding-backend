@@ -11,6 +11,13 @@ import {
 import { User } from './user.entity';
 import { Job } from './job.entity';
 
+// 확장성을 위해 enum 으로 상태를 정의하되 varchar 타입으로 값 저장
+export enum ApplicationStatus {
+  SUBMITTED = 'submitted', // 제출
+  ACCEPTED = 'accepted', // 합격
+  REJECTED = 'rejected', // 불합격
+}
+
 @Entity()
 @Unique(['userId', 'jobId'])
 export class Application {
@@ -40,9 +47,8 @@ export class Application {
   @Column('text')
   content: string;
 
-  // 지원 상태 - submitted, accepted, rejected
-  @Column({ type: 'smallint' }) // char?
-  status: number;
+  @Column({ type: 'varchar', length: 20, default: ApplicationStatus.SUBMITTED })
+  status: ApplicationStatus;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })

@@ -14,12 +14,6 @@ export class Company {
   @PrimaryColumn({ type: 'varchar', length: 21 })
   companyId: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
   @Column({ type: 'varchar', length: 255 })
   companyName: string;
 
@@ -31,6 +25,12 @@ export class Company {
 
   @Column({ type: 'varchar', length: 255 })
   industry: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToMany(() => Job, (job) => job.company)
   jobs: Job[];

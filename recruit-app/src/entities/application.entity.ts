@@ -25,12 +25,6 @@ export class Application {
   @PrimaryColumn({ type: 'varchar', length: 21 })
   applicationId: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
   // 지원자 아이디
   @Column({ type: 'varchar', length: 21 })
   userId: string;
@@ -49,6 +43,12 @@ export class Application {
 
   @Column({ type: 'varchar', length: 20, default: ApplicationStatus.SUBMITTED })
   status: ApplicationStatus;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })

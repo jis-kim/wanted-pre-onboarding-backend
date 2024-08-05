@@ -16,12 +16,6 @@ export class Job {
   @PrimaryColumn({ type: 'varchar', length: 21 })
   jobId: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
   @Column({ type: 'varchar', length: 255 })
   position: string;
 
@@ -46,6 +40,12 @@ export class Job {
 
   @Column({ type: 'varchar', length: 21 })
   companyId: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @ManyToOne(() => Company)
   @JoinColumn({ name: 'company_id' })

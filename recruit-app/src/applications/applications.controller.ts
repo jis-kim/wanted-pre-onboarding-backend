@@ -8,11 +8,12 @@ export class ApplicationsController {
   constructor(private readonly applicationsService: ApplicationsService) {}
 
   @Post()
-  create(
+  async create(
     @Body() createApplicationDto: CreateApplicationDto,
     @Res() res: Response,
   ) {
-    const applicationId = this.applicationsService.create(createApplicationDto);
+    const applicationId =
+      await this.applicationsService.create(createApplicationDto);
     const location = `/applications/${applicationId}`;
     res.setHeader('Location', location);
     res.status(201).send({

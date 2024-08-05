@@ -16,12 +16,11 @@ import { ApplicationsModule } from './applications/applications.module';
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'postgres',
-        //host: process.env.POSTGRES_HOST || 'localhost',
-        //port: parseInt(process.env.POSTGRES_PORT || '5432'),
-        //username: process.env.POSTGRES_USER,
-        //password: process.env.POSTGRES_PASSWORD,
-        //database: process.env.POSTGRES_DB,
-        url: process.env.POSTGRES_URL,
+        host: process.env.POSTGRES_HOST || 'localhost',
+        port: parseInt(process.env.POSTGRES_PORT || '5432'),
+        username: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
+        database: process.env.POSTGRES_DB,
         autoLoadEntities: true, // module에 있는 모든 entity를 감지
         logging: true,
         synchronize: true,

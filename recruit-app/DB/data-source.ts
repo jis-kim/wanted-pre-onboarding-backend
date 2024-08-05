@@ -9,7 +9,11 @@ config();
 (async () => {
   const options: DataSourceOptions = {
     type: 'postgres',
-    url: process.env.POSTGRES_URL,
+    host: process.env.POSTGRES_HOST || 'localhost',
+    port: parseInt(process.env.POSTGRES_PORT || '5432'),
+    username: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
     synchronize: true,
     entities: ['src/entities/*.ts'],
     namingStrategy: new SnakeNamingStrategy(),
@@ -31,8 +35,8 @@ config();
     process.exit(1);
   }
   try {
-    console.log(await seeder.createCompanies(dataSource));
-    console.log(await seeder.createUsers(dataSource));
+    await seeder.createCompanies(dataSource);
+    await seeder.createUsers(dataSource);
   } catch (e) {
     console.error(e);
     if (e.code === '23505') {

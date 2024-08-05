@@ -12,7 +12,6 @@ async function createCompanies(dataSource: DataSource) {
     );
     const result = await companyRepository.insert(companySeed);
     console.log('10 companies created!\n', result.identifiers);
-    return result.identifiers;
   });
 }
 

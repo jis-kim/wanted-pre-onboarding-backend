@@ -1,9 +1,4 @@
-import {
-  ArgumentMetadata,
-  BadRequestException,
-  Injectable,
-  PipeTransform,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 const MIN_SEARCH_LENGTH = 2;
 const MAX_SEARCH_LENGTH = 50;
 

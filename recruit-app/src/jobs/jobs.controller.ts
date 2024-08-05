@@ -14,6 +14,7 @@ import { CreateJobDto } from './dto/create-job.dto';
 import { JobListDto } from './dto/job-list.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { JobsService } from './jobs.service';
+import { JobDetailDto } from './dto/job-detail.dto';
 
 @Controller('jobs')
 export class JobsController {
@@ -40,7 +41,7 @@ export class JobsController {
   }
 
   @Get(':jobId')
-  findOne(@Param('jobId') jobId: string) {
+  findOne(@Param('jobId') jobId: string): Promise<JobDetailDto> {
     return this.jobService.findOne(jobId);
   }
 

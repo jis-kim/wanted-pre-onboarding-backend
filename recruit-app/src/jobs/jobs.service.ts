@@ -10,6 +10,7 @@ import { Job } from '../entities';
 import { CreateJobDto } from './dto/create-job.dto';
 import { JobInfo, JobListDto } from './dto/job-list.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
+import { JobDetailDto } from './dto/job-detail.dto';
 
 @Injectable()
 export class JobsService {
@@ -50,12 +51,31 @@ export class JobsService {
     return jobList;
   }
 
-  findOne(jobId: string) {
-    return this.jobRepository.findOneBy({ jobId });
+  async findOne(jobId: string): Promise<JobDetailDto> {
+    const detailedJob = await this.jobRepository
+      .createQueryBuilder('job')
+      .leftJoinAndSelect('job.company', 'company')
+      .leftJoinAndSelect('company.jobs', 'anotherJobs')
+      .select([
+        'job',
+        'company.companyId',
+        'company.companyName',
+        'anotherJobs.jobId',
+        'anotherJobs.position',
+      ])
+      .where('job.jobId = :jobId', { jobId })
+      .andWhere('anotherJobs.jobId != :jobId', { jobId })
+      .getOne();
+
+    if (!detailedJob) {
+      throw new NotFoundException('존재하지 않는 채용공고 입니다.');
+    }
+
+    return detailedJob;
   }
 
   async update(jobId: string, updateJobDto: UpdateJobDto) {
-    const job = await this.findOne(jobId);
+    const job = await this.jobRepository.findOneBy({ jobId });
     if (!job) {
       throw new NotFoundException('존재하지 않는 채용공고 입니다.');
     }

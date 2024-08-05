@@ -43,10 +43,6 @@ POSTGRES_PASSWORD=
 - `.env` 파일에 설정한 환경변수를 이용하여 postgres container 를 생성합니다.
 - docker, docker compose 가 설치되어 있지 않다면 `.env` 를 로컬 환경에 맞게 수정하여 실행 합니다.
 
-## DB table 생성
-
-- dump file 을 이용하여 DB table 생성
-
 ## seeding data 생성
 
 - recruit-app 에서 `pnpm run seed` 또는 `npx ts-node ./DB/data-source.ts` 실행
@@ -56,12 +52,26 @@ POSTGRES_PASSWORD=
 
 - `pnpm run build && pnpm run start:prod` 실행
 
+## 테스트
+
+- `pnpm run test` 실행
+
 # ERD
+
+- ![img](./asset/recruit-erd.png)
 
 # API list
 
+- [issue list 참고](https://github.com/jis-kim/wanted-pre-onboarding-backend/issues)
+
 ## jobs
+
+- GET /jobs?keyword=
+- POST /jobs
+- GET /jobs/:id
+- PATCH /jobs/:id
+- DELETE /jobs/:id
 
 ## applications
 
-## companies
+- POST /applications

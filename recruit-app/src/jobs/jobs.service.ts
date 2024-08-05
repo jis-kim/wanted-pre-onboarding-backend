@@ -28,8 +28,17 @@ export class JobsService {
     return jobId;
   }
 
-  async find() {
-    return 'This action returns all job';
+  async findByKeyword(keyword: string) {
+    const jobList = await this.jobRepository
+      .createQueryBuilder('job')
+      .leftJoinAndSelect('job.company', 'company')
+      .where('job.position LIKE :keyword', { keyword: `%${keyword}%` })
+      .orWhere('job.skills LIKE :keyword', { keyword: `%${keyword}%` })
+      .orWhere('job.country LIKE :keyword', { keyword: `%${keyword}%` })
+      .orWhere('job.region LIKE :keyword', { keyword: `%${keyword}%` })
+      .orWhere('company.companyName LIKE :keyword', { keyword: `%${keyword}%` })
+      .getMany();
+    return jobList;
   }
 
   async findAll() {

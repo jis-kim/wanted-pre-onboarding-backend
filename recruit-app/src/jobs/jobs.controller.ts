@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -15,14 +16,22 @@ import { JobListDto } from './dto/job-list.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { JobsService } from './jobs.service';
 import { JobDetailDto } from './dto/job-detail.dto';
+import { KeywordPipe } from './pipe/keyword.pipe';
 
 @Controller('jobs')
 export class JobsController {
   constructor(private readonly jobService: JobsService) {}
 
   @Get()
-  async findAll(): Promise<JobListDto> {
-    const jobList = await this.jobService.findAll();
+  async findAll(
+    @Query('keyword', KeywordPipe) keyword: string,
+  ): Promise<JobListDto> {
+    let jobList;
+    if (keyword) {
+      jobList = await this.jobService.findByKeyword(keyword);
+    } else {
+      jobList = await this.jobService.findAll();
+    }
     return this.jobService.formatJobList(jobList);
   }
 

@@ -11,10 +11,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Job } from '../entities';
+import { RoleGuard } from '../utils/guards/role.guard';
+import { UsersService } from '../users/users.service';
+import { CompaniesService } from '../companies/companies.service';
 
 describe('JobsController', () => {
   let controller: JobsController;
   let service: JobsService;
+  let roleGuard: RoleGuard;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,17 +30,33 @@ describe('JobsController', () => {
             findAll: jest.fn(),
             findByKeyword: jest.fn(),
             create: jest.fn(),
-            findOne: jest.fn(),
+            findDetailedOne: jest.fn(),
+            findOneById: jest.fn(),
             update: jest.fn(),
             remove: jest.fn(),
             formatJobList: jest.fn(),
           },
         },
+        {
+          provide: UsersService,
+          useValue: {
+            findOneById: jest.fn(),
+          },
+        },
+        {
+          provide: CompaniesService,
+          useValue: {
+            findOneById: jest.fn(),
+          },
+        },
+        RoleGuard,
       ],
     }).compile();
 
     controller = module.get<JobsController>(JobsController);
     service = module.get<JobsService>(JobsService);
+    roleGuard = module.get<RoleGuard>(RoleGuard);
+    roleGuard.canActivate = jest.fn().mockResolvedValue(true);
   });
 
   it('should be defined', () => {
@@ -53,7 +73,6 @@ describe('JobsController', () => {
           country: '한국',
           region: '서울',
           dueDate: new Date(),
-          companyId: 'aaaaaaaaaaaaaaaaaaaaa',
         },
       ] as Job[];
       jest.spyOn(service, 'findAll').mockResolvedValue(jobList);
@@ -76,7 +95,6 @@ describe('JobsController', () => {
           country: '한국',
           region: '서울',
           dueDate: new Date(),
-          companyId: 'aaaaaaaaaaaaaaaaaaaaa',
         },
       ] as Job[];
       jest.spyOn(service, 'findByKeyword').mockResolvedValue(jobList);
@@ -98,7 +116,6 @@ describe('JobsController', () => {
         country: '한국',
         region: '서울',
         dueDate: new Date(),
-        companyId: 'aaaaaaaaaaaaaaaaaaaaa',
         reward: 123,
         description: '',
       };
@@ -111,9 +128,16 @@ describe('JobsController', () => {
 
       jest.spyOn(service, 'create').mockResolvedValue(jobId);
 
-      await controller.create(createJobDto, res);
+      await controller.create(createJobDto, res, {
+        companyId: 'ccccccccccccccccccccc',
+      } as any);
 
-      expect(service.create).toHaveBeenCalledWith(createJobDto);
+      expect(service.create).toHaveBeenCalledWith(
+        {
+          companyId: 'ccccccccccccccccccccc',
+        } as any,
+        createJobDto,
+      );
       expect(res.setHeader).toHaveBeenCalledWith('Location', `/jobs/${jobId}`);
       expect(res.status).toHaveBeenCalledWith(HttpStatus.CREATED);
       expect(res.send).toHaveBeenCalledWith({
@@ -129,7 +153,6 @@ describe('JobsController', () => {
         country: '',
         region: '서울',
         dueDate: new Date(),
-        companyId: 'aaaaaaaaaaaaaaaaaaaaa',
         reward: 1000000000,
         description: '',
       };
@@ -166,12 +189,12 @@ describe('JobsController', () => {
         },
       };
 
-      jest.spyOn(service, 'findOne').mockResolvedValue(jobDetail);
+      jest.spyOn(service, 'findDetailedOne').mockResolvedValue(jobDetail);
 
       const result = await controller.findOne(jobId);
 
       expect(result).toBe(jobDetail);
-      expect(service.findOne).toHaveBeenCalledWith(jobId);
+      expect(service.findDetailedOne).toHaveBeenCalledWith(jobId);
     });
   });
 
@@ -180,18 +203,25 @@ describe('JobsController', () => {
       const jobId = '1';
       const updateJobDto: UpdateJobDto = {
         position: 'Senior Developer',
-        companyId: 'companyId',
       };
       const updatedJob = { jobId, ...updateJobDto };
       jest.spyOn(service, 'update').mockResolvedValue(updatedJob as Job);
 
-      const result = await controller.update(jobId, updateJobDto);
+      const result = await controller.update(jobId, updateJobDto, {
+        companyId: 'ccccccccccccccccccccc',
+      } as any);
 
       expect(result).toEqual({
         message: 'Job updated.',
         job: updatedJob,
       });
-      expect(service.update).toHaveBeenCalledWith(jobId, updateJobDto);
+      expect(service.update).toHaveBeenCalledWith(
+        jobId,
+        {
+          companyId: 'ccccccccccccccccccccc',
+        } as any,
+        updateJobDto,
+      );
     });
   });
 
@@ -200,12 +230,16 @@ describe('JobsController', () => {
       const jobId = '1';
       jest.spyOn(service, 'remove').mockResolvedValue(undefined);
 
-      const result = await controller.remove(jobId);
+      const result = await controller.remove(jobId, {
+        companyId: 'ccccccccccccccccccccc',
+      } as any);
 
       expect(result).toEqual({
         message: 'Job deleted.',
       });
-      expect(service.remove).toHaveBeenCalledWith(jobId);
+      expect(service.remove).toHaveBeenCalledWith(jobId, {
+        companyId: 'ccccccccccccccccccccc',
+      } as any);
     });
   });
 });

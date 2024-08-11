@@ -14,6 +14,7 @@ jest.mock('nanoid');
 describe('JobsService', () => {
   let service: JobsService;
   let repository: Repository<Job>;
+  const company = { companyId: 'aaaaaaaaaaaaaaaaaaaaa' } as any;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -42,7 +43,6 @@ describe('JobsService', () => {
         country: '한국',
         region: '서울',
         dueDate: new Date(),
-        companyId: 'aaaaaaaaaaaaaaaaaaaaa',
         reward: 123,
         description: '',
       };
@@ -52,11 +52,12 @@ describe('JobsService', () => {
         .spyOn(repository, 'insert')
         .mockResolvedValue({ identifiers: jobId } as any);
 
-      const result = await service.create(createJobDto);
+      const result = await service.create(company, createJobDto);
 
       expect(result).toBe(jobId);
       expect(repository.insert).toHaveBeenCalledWith({
         jobId,
+        companyId: company.companyId,
         ...createJobDto,
       });
     });
@@ -111,7 +112,7 @@ describe('JobsService', () => {
     });
   });
 
-  describe('findOne', () => {
+  describe('findDetailedOne', () => {
     it('job detail 을 return 한다.', async () => {
       const jobId = '1';
       const detailedJob: JobDetailDto = {
@@ -140,7 +141,7 @@ describe('JobsService', () => {
         getOne: jest.fn().mockResolvedValue(detailedJob),
       } as any);
 
-      const result = await service.findOne(jobId);
+      const result = await service.findDetailedOne(jobId);
 
       expect(result).toBe(detailedJob);
     });
@@ -155,7 +156,9 @@ describe('JobsService', () => {
         getOne: jest.fn().mockResolvedValue(null),
       } as any);
 
-      await expect(service.findOne(jobId)).rejects.toThrow(NotFoundException);
+      await expect(service.findDetailedOne(jobId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -164,7 +167,6 @@ describe('JobsService', () => {
       const jobId = '1';
       const updateJobDto: UpdateJobDto = {
         dueDate: new Date('2024-12-31'),
-        companyId: 'aaaaaaaaaaaaaaaaaaaaa',
       };
 
       const job = {
@@ -178,9 +180,12 @@ describe('JobsService', () => {
       } as Job;
 
       jest.spyOn(repository, 'findOneBy').mockResolvedValue(job);
-      jest.spyOn(repository, 'update').mockResolvedValue(undefined as any);
+      jest.spyOn(repository, 'update').mockResolvedValue({
+        ...job,
+        ...updateJobDto,
+      } as any);
 
-      const result = await service.update(jobId, updateJobDto);
+      const result = await service.update(jobId, company, updateJobDto);
 
       expect(repository.update).toHaveBeenCalledWith(jobId, updateJobDto);
       expect(result).toEqual({ ...job, ...updateJobDto });
@@ -190,20 +195,18 @@ describe('JobsService', () => {
       const jobId = '1';
       const updateJobDto: UpdateJobDto = {
         position: 'abc',
-        companyId: 'aaaaaaaaaaaaaaaaaaaaa',
       };
       jest.spyOn(repository, 'findOneBy').mockResolvedValue(null);
 
-      await expect(service.update(jobId, updateJobDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update(jobId, company, updateJobDto),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('job을 생성한 회사의 id가 아니면 ForbiddenException', async () => {
       const jobId = '1';
       const updateJobDto: UpdateJobDto = {
         position: 'abc',
-        companyId: 'bbbbbbbbbbbbbbbbbbbbb',
       };
       const job = {
         jobId: '1',
@@ -212,13 +215,15 @@ describe('JobsService', () => {
         country: '한국',
         region: '서울',
         dueDate: new Date(),
-        companyId: 'aaaaaaaaaaaaaaaaaaaaa',
+        companyId: 'bbbbbbbbbbbbbbbbbbbbbb',
       } as Job;
-      jest.spyOn(repository, 'findOneBy').mockResolvedValue(job);
 
-      await expect(service.update(jobId, updateJobDto)).rejects.toThrow(
-        ForbiddenException,
-      );
+      jest.spyOn(repository, 'findOneBy').mockResolvedValue(job);
+      jest.spyOn(repository, 'update').mockResolvedValue({} as any);
+
+      await expect(
+        service.update(jobId, company, updateJobDto),
+      ).rejects.toThrow(ForbiddenException);
     });
   });
 
@@ -228,18 +233,35 @@ describe('JobsService', () => {
       jest
         .spyOn(repository, 'delete')
         .mockResolvedValue({ affected: 1 } as any);
-
-      await expect(service.remove(jobId)).resolves.toBeUndefined();
+      jest.spyOn(repository, 'findOneBy').mockResolvedValue({
+        jobId: '1',
+        position: '개발',
+        skills: 'python',
+        country: '한국',
+        region: '서울',
+        dueDate: new Date(),
+        companyId: 'aaaaaaaaaaaaaaaaaaaaa',
+      } as Job);
+      await expect(service.remove(jobId, company)).resolves.toBeUndefined();
       expect(repository.delete).toHaveBeenCalledWith(jobId);
     });
 
-    it('jobId 가 유효하지 않으면 NotFoundException', async () => {
+    it('job을 생성한 회사의 id가 아니면 ForbiddenException', async () => {
       const jobId = '1';
-      jest
-        .spyOn(repository, 'delete')
-        .mockResolvedValue({ affected: 0 } as any);
+      const job = {
+        jobId: '1',
+        position: '개발',
+        skills: 'python',
+        country: '한국',
+        region: '서울',
+        dueDate: new Date(),
+        companyId: 'bbbbbbbbbbbbbbbbb',
+      } as Job;
+      jest.spyOn(repository, 'findOneBy').mockResolvedValue(job);
 
-      await expect(service.remove(jobId)).rejects.toThrow(NotFoundException);
+      await expect(service.remove(jobId, company)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 });

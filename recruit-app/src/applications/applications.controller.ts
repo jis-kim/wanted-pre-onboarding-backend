@@ -26,7 +26,7 @@ export class ApplicationsController {
   @Get()
   async findAll(): Promise<ApplicationListDto> {
     // 임시 사용자 id
-    const userId = '123456789012345678901';
+    const userId = 'FP7nRguP4oP6mFxAEid-n';
     return this.applicationsService.findAll(userId);
   }
 }

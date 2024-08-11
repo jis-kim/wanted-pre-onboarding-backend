@@ -27,7 +27,4 @@ export class CreateJobDto {
 
   @IsDateString()
   dueDate: Date;
-
-  @IsString()
-  companyId: string;
 }

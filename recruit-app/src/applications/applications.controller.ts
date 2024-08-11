@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus, Get } from '@nestjs/common';
 import { ApplicationsService } from './applications.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { Response } from 'express';
+import { ApplicationListDto } from './dto/application-list.dto';
 
 @Controller('applications')
 export class ApplicationsController {
@@ -16,9 +17,16 @@ export class ApplicationsController {
       await this.applicationsService.create(createApplicationDto);
     const location = `/applications/${applicationId}`;
     res.setHeader('Location', location);
-    res.status(201).send({
+    res.status(HttpStatus.CREATED).send({
       message: 'Application created.',
       applicationId,
     });
+  }
+
+  @Get()
+  async findAll(): Promise<ApplicationListDto> {
+    // 임시 사용자 id
+    const userId = '123456789012345678901';
+    return this.applicationsService.findAll(userId);
   }
 }

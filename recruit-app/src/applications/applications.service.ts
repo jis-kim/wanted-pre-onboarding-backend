@@ -8,6 +8,7 @@ import { nanoid } from 'nanoid';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Application } from '../entities';
 import { Repository } from 'typeorm';
+import { ApplicationListDto } from './dto/application-list.dto';
 
 @Injectable()
 export class ApplicationsService {
@@ -40,5 +41,29 @@ export class ApplicationsService {
       throw error;
     }
     return applicationId;
+  }
+
+  async findAll(userId: string): Promise<ApplicationListDto> {
+    const applicationList = await this.applicationRepository.find({
+      select: {
+        applicationId: true,
+        userId: true,
+        title: true,
+        content: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        job: {
+          jobId: true,
+          position: true,
+        },
+      },
+      where: { userId },
+      relations: ['job'],
+    });
+    return {
+      total: applicationList.length,
+      applications: applicationList,
+    };
   }
 }

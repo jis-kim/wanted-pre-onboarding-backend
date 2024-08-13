@@ -24,6 +24,13 @@ export class ApplicationsController {
 
   @AllowedFor(Role.USER)
   @UseGuards(RoleGuard)
+  @Get()
+  async findAll(@RequestUser() user: User): Promise<ApplicationListDto> {
+    return this.applicationsService.findAll(user);
+  }
+
+  @AllowedFor(Role.USER)
+  @UseGuards(RoleGuard)
   @Post()
   async create(
     @Body() createApplicationDto: CreateApplicationDto,
@@ -40,12 +47,5 @@ export class ApplicationsController {
       message: 'Application created.',
       applicationId,
     });
-  }
-
-  @AllowedFor(Role.USER)
-  @UseGuards(RoleGuard)
-  @Get()
-  async findAll(@RequestUser() user: User): Promise<ApplicationListDto> {
-    return this.applicationsService.findAll(user);
   }
 }

@@ -9,6 +9,10 @@ export class ApplicationInfo {
   job: {
     jobId: string;
     position: string;
+    company: {
+      companyId: string;
+      companyName: string;
+    };
   };
 }
 

@@ -56,10 +56,14 @@ export class ApplicationsService {
         job: {
           jobId: true,
           position: true,
+          company: {
+            companyId: true,
+            companyName: true,
+          },
         },
       },
       where: { userId: user.userId },
-      relations: ['job'],
+      relations: ['job', 'job.company'],
     });
 
     return {

@@ -6,10 +6,6 @@ export class CreateApplicationDto {
   jobId: string;
 
   @IsString()
-  @Length(21, 21)
-  userId: string;
-
-  @IsString()
   @Length(1, 255)
   title: string;
 

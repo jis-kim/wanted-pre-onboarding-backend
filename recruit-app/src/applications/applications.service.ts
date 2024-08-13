@@ -6,7 +6,7 @@ import {
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { nanoid } from 'nanoid';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Application } from '../entities';
+import { Application, User } from '../entities';
 import { Repository } from 'typeorm';
 import { ApplicationListDto } from './dto/application-list.dto';
 
@@ -17,11 +17,11 @@ export class ApplicationsService {
     private readonly applicationRepository: Repository<Application>,
   ) {}
 
-  async create(createApplicationDto: CreateApplicationDto) {
+  async create(user: User, createApplicationDto: CreateApplicationDto) {
     const applicationId = nanoid();
-    const { jobId, userId } = createApplicationDto;
+    const { jobId } = createApplicationDto;
     const application = await this.applicationRepository.findOne({
-      where: { jobId, userId },
+      where: { jobId, userId: user.userId },
     });
 
     if (application) {
@@ -43,7 +43,7 @@ export class ApplicationsService {
     return applicationId;
   }
 
-  async findAll(userId: string): Promise<ApplicationListDto> {
+  async findAll(user: User): Promise<ApplicationListDto> {
     const applicationList = await this.applicationRepository.find({
       select: {
         applicationId: true,
@@ -58,9 +58,10 @@ export class ApplicationsService {
           position: true,
         },
       },
-      where: { userId },
+      where: { userId: user.userId },
       relations: ['job'],
     });
+
     return {
       total: applicationList.length,
       applications: applicationList,

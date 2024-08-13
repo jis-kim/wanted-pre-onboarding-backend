@@ -21,7 +21,7 @@ import { KeywordPipe } from './pipe/keyword.pipe';
 import { AllowedFor, Role } from '../utils/decorator/allowed-for.decorator';
 import { RoleGuard } from '../utils/guards/role.guard';
 import { Company, Job } from '../entities';
-import { RequestCompany } from '../utils/decorator/company.decorator';
+import { RequestCompany } from '../utils/decorator/request-company.decorator';
 
 const JOB_PATH = '/jobs';
 

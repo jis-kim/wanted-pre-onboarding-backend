@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApplicationsService } from './applications.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Application } from '../entities';
+import { Application, User } from '../entities';
 import { InsertResult, Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { ConflictException, NotFoundException } from '@nestjs/common';
@@ -32,10 +32,13 @@ describe('ApplicationsService', () => {
     expect(service).toBeDefined();
   });
 
+  const user = {
+    userId: 'user123',
+  } as User;
+
   describe('create', () => {
     const createApplicationDto: CreateApplicationDto = {
       jobId: 'job123',
-      userId: 'user123',
       title: 'Application Title',
       content: 'Application Content',
     };
@@ -44,14 +47,14 @@ describe('ApplicationsService', () => {
       jest.spyOn(repository, 'findOne').mockResolvedValue(null);
       jest.spyOn(repository, 'insert').mockResolvedValue(new InsertResult());
 
-      const result = await service.create(createApplicationDto);
+      const result = await service.create(user, createApplicationDto);
 
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
       expect(repository.findOne).toHaveBeenCalledWith({
         where: {
           jobId: createApplicationDto.jobId,
-          userId: createApplicationDto.userId,
+          userId: user.userId,
         },
       });
       expect(repository.insert).toHaveBeenCalled();
@@ -60,13 +63,13 @@ describe('ApplicationsService', () => {
     it('이미 지원한 채용공고인 경우 ConflictException', async () => {
       jest.spyOn(repository, 'findOne').mockResolvedValue({} as Application);
 
-      await expect(service.create(createApplicationDto)).rejects.toThrow(
+      await expect(service.create(user, createApplicationDto)).rejects.toThrow(
         ConflictException,
       );
       expect(repository.findOne).toHaveBeenCalledWith({
         where: {
           jobId: createApplicationDto.jobId,
-          userId: createApplicationDto.userId,
+          userId: user.userId,
         },
       });
       expect(repository.insert).not.toHaveBeenCalled();
@@ -76,7 +79,7 @@ describe('ApplicationsService', () => {
       jest.spyOn(repository, 'findOne').mockResolvedValue(null);
       jest.spyOn(repository, 'insert').mockRejectedValue({ code: '23503' });
 
-      await expect(service.create(createApplicationDto)).rejects.toThrow(
+      await expect(service.create(user, createApplicationDto)).rejects.toThrow(
         NotFoundException,
       );
       expect(repository.findOne).toHaveBeenCalled();

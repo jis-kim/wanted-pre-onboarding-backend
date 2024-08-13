@@ -3,6 +3,9 @@ import { ApplicationsController } from './applications.controller';
 import { ApplicationsService } from './applications.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { User } from '../entities';
+import { UsersService } from '../users/users.service';
+import { CompaniesService } from '../companies/companies.service';
 
 describe('ApplicationsController', () => {
   let controller: ApplicationsController;
@@ -18,6 +21,18 @@ describe('ApplicationsController', () => {
             create: jest.fn(),
           },
         },
+        {
+          provide: UsersService,
+          useValue: {
+            findOneById: jest.fn(),
+          },
+        },
+        {
+          provide: CompaniesService,
+          useValue: {
+            findOneById: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -26,10 +41,13 @@ describe('ApplicationsController', () => {
   });
 
   describe('create', () => {
+    const user = {
+      userId: '123456789012345678901',
+    } as User;
+
     it('요청 성공 시 201 Created. Location 헤더를 함께 보낸다.', async () => {
       const dto: CreateApplicationDto = {
         jobId: '123456789012345678901', // 21자
-        userId: '123456789012345678901',
         title: 'Test Application',
         content: 'This is a test application content.',
       };
@@ -42,9 +60,9 @@ describe('ApplicationsController', () => {
 
       jest.spyOn(service, 'create').mockResolvedValue(mockApplicationId);
 
-      await controller.create(dto, mockResponse as any);
+      await controller.create(dto, mockResponse as any, user);
 
-      expect(service.create).toHaveBeenCalledWith(dto);
+      expect(service.create).toHaveBeenCalledWith(user, dto);
       expect(mockResponse.setHeader).toHaveBeenCalledWith(
         'Location',
         `/applications/${mockApplicationId}`,

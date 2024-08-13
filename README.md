@@ -66,12 +66,313 @@ POSTGRES_PASSWORD=
 
 ## jobs
 
-- GET /jobs?keyword=
-- POST /jobs
-- GET /jobs/:id
-- PATCH /jobs/:id
-- DELETE /jobs/:id
+### GET `/jobs?keyword=`
+
+- issue [#5](../../issues/5)
+- issue [#8](../../issues/8)
+
+#### Description
+
+keyword 가 있으면 해당 키워드를 포함하는 채용공고를 검색합니다. 없으면 전체 채용공고를 검색합니다.
+
+#### Request
+
+##### query
+
+- keyword: string
+  - 검색 키워드
+  - 2글자 이상, 50글자 이하
+  - src/jobs/pipe/keyword-validation.pipe.ts 에서 유효성 검사
+
+#### Response
+
+##### status code
+
+- 200, 400
+- 결과가 없을 경우에는 빈 배열을 반환.
+
+##### body
+
+```
+{
+  total?: number; // 전체 채용공고 개수
+  jobs:
+  {
+    jobId: string;
+    position: string;
+    skills: string;
+    country: string;
+    region: string;
+    dueDate: Date;
+    companyId: string;
+    companyName: string;
+  }[];
+}
+```
+
+### POST `/jobs`
+
+- issue [#2](../../issues/2)
+
+#### Description
+
+request body 기반으로 채용 공고를 생성하고 생성된 채용공고에 접근할 수 있는 path를 Location 헤더에 담아 반환합니다.
+
+#### Request
+
+##### header
+
+- x-company-id: string
+  - job 생성을 요청한 company의 id
+
+##### body
+
+```
+{
+  position: string;
+  skills: string;
+  rewards: string;
+  description: string;
+  country: string;
+  region: string;
+  dueDate: Date; // ISO 8601
+}
+```
+
+#### Response
+
+##### status code
+
+- 201, 400, 403
+
+##### header
+
+- Location: string
+  - 생성된 채용공고에 접근할 수 있는 path
+  - `/jobs/:jodId`
+
+##### body
+
+```
+{
+  message: string;
+  jobId: string;
+}
+```
+
+### GET `/jobs/:job_id`
+
+- issue [#6](../../issues/6)
+
+#### Description
+
+job_id에 해당하는 채용공고의 자세한 정보를 반환합니다.
+
+#### Request
+
+##### param
+
+- job_id
+  - 조회할 채용공고의 id
+
+#### Response
+
+##### status code
+
+- 200, 400, 404
+
+##### body
+
+```
+{
+  jobId: string;
+  position: string;
+  skills: string;
+  reward: string;
+  description: string;
+  country: string;
+  region: string;
+  dueDate: Date;
+  companyId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  company: {
+    companyId: string;
+    companyName: string;
+    jobs : { // 회사가 등록한 다른 채용공고 리스트
+      jobId: string;
+      position: string;
+    }[];
+  }
+}
+```
+
+### PATCH `/jobs/:job_id`
+
+- issue [#3](../../issues/3)
+
+#### Description
+
+job_id에 해당하는 채용공고의 정보를 수정합니다.
+
+#### Request
+
+##### param
+
+- job_id
+  - 수정할 채용공고의 id
+
+##### body
+
+- POST `/jobs/:job_id`의 Partial type
+
+```
+{
+  position: string;
+  skills: string;
+  rewards: string;
+  description: string;
+  country: string;
+  region: string;
+  dueDate: Date; // ISO 8601
+}
+```
+
+#### Response
+
+##### status code
+
+- 200, 400, 403, 404
+
+##### body
+
+```
+{
+  message: string;
+  jobId: string;
+}
+```
+
+### DELETE `/jobs/:job_id`
+
+- issue [#4](../../issues/4)
+
+#### Description
+
+job_id에 해당하는 채용공고를 삭제합니다.
+
+#### Request
+
+##### param
+
+- job_id
+  - 삭제할 채용공고의 id
+
+#### Response
+
+##### status code
+
+- 200, 400, 403, 404
+
+##### body
+
+```
+{
+  message: string;
+}
+```
 
 ## applications
 
-- POST /applications
+### POST `/applications`
+
+- issue [#7](../../issues/7)
+
+#### Description
+
+request body 기반으로 지원서를 생성하고 생성된 지원서에 접근할 수 있는 path를 Location 헤더에 담아 반환합니다.
+
+#### Request
+
+##### header
+
+- x-user-id: string
+  - 지원서를 생성한 user의 id
+
+##### body
+
+```
+{
+  jobId: string;
+  title: string;
+  content: string;
+}
+```
+
+#### Response
+
+##### status code
+
+- 201, 400, 403
+
+##### header
+
+- Location: string
+  - 생성된 지원서에 접근할 수 있는 path
+  - `/applications/:application_id`
+
+##### body
+
+```
+{
+  message: string;
+  applicationId: string;
+}
+```
+
+### GET `/applications`
+
+- issue [#9](../../issues/9)
+
+#### Description
+
+user_id에 해당하는 user가 지원한 지원서 리스트를 반환합니다.
+
+#### Request
+
+##### header
+
+- x-user-id: string
+  - 지원서를 조회할 user의 id
+
+#### Response
+
+##### success status code
+
+- 200, 400, 403
+
+##### body
+
+```
+{
+  total?: number; // 전체 지원서 개수
+  applications:
+  {
+    applicationId: string;
+    userId: string;
+    title: string;
+    content: string;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
+    job: {
+      jobId: string;
+      position: string;
+      company: {
+        companyId: string;
+        companyName: string;
+      }
+    }
+  }[];
+}
+```

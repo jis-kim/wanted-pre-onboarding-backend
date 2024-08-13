@@ -10,6 +10,10 @@ export class CompaniesService {
     private readonly companyRepository: Repository<Company>,
   ) {}
 
+  async findAll() {
+    return this.companyRepository.find();
+  }
+
   async findOneById(companyId: string) {
     return this.companyRepository.findOneBy({ companyId });
   }

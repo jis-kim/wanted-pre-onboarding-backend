@@ -43,6 +43,10 @@ POSTGRES_PASSWORD=
 - `.env` 파일에 설정한 환경변수를 이용하여 postgres container 를 생성합니다.
 - docker, docker compose 가 설치되어 있지 않다면 `.env` 를 로컬 환경에 맞게 수정하여 실행 합니다.
 
+## dump 파일으로 DB table 생성
+
+- recruit-app에서 `psql -U username -d database_name -h database_host -p database_port -f ./DB/dump_file.sql` 실행
+
 ## seeding data 생성
 
 - recruit-app 에서 `pnpm run seed` 또는 `npx ts-node ./DB/data-source.ts` 실행
@@ -376,3 +380,11 @@ user_id에 해당하는 user가 지원한 지원서 리스트를 반환합니다
   }[];
 }
 ```
+
+## 기타
+
+### GET /companies
+
+### GET /users
+
+- 테스트용으로 모든 회사, 유저 정보를 조회할 수 있는 API

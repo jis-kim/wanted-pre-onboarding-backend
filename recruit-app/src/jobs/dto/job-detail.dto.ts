@@ -1,7 +1,5 @@
 export class JobDetailDto {
   jobId: string;
-  createdAt: Date;
-  updatedAt: Date;
   position: string;
   skills: string;
   reward: number;
@@ -10,7 +8,8 @@ export class JobDetailDto {
   region: string;
   dueDate: Date;
   companyId: string;
-
+  createdAt: Date;
+  updatedAt: Date;
   company: {
     companyId: string;
     companyName: string;
